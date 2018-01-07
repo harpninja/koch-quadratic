@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+ 	<head>
+ 		<meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+		<title>Koch</title>
+		<script src='https://d3js.org/d3.v4.min.js'></script>
+		<style>
+
+		body {
+			font-family: Verdana, sans-serif;
+			font-size: 8pt;
+			color: #555555;
+			background: #ffffff;
+			margin-left: 20px;
+			margin-top: 20px;
+		}
+
+		input {
+			font-family: Verdana, sans-serif;
+			font-size: 8pt;
+			color: #555555;
+		}
+
+		.line {
+			fill: none;
+			stroke: #000000;
+			stroke-width: 1.1px;
+		}
+
+		</style>
+ 	</head>
+
+ 	<body>
+	<h3>Quadratic Koch curves with L-systems</h3>
+	<p>From <em>The Algorithmic Beauty of Plants</em> by Przemyslaw Prusinkiewicz and Aristid Lindenmayer.</p>
+	<form>
+	iterations: <select id='iterations'>
+		 			<option value='0'>0</option>
+					<option value='1'>1</option>
+					<option value='2'>2</option>
+					<option value='3'>3</option>
+				</select>
+	line length: <input type='text' id='line_length' size='4' value='256'>
+	initiator: <input type='text' id='initiator' size='8' value='F-F-F-F'>
+	generator: <input type='text' id='generator' size='64' value='F-F+F+FF-F-F+F'>
+	<button type='button' onclick='draw()'>draw</button>
+	</form>
+
+    <script>
+    'use strict'
+		const margin = {top: 20, right: 20, bottom: 20, left: 20}
+		const width = 1200 - margin.left - margin.right
+		const height = 900 - margin.top - margin.bottom
+
+		const line = d3.line()
+				.x(function(d) { return d.x; })
+				.y(function(d) { return d.y; })
+
+		const svg = d3.select('body').append('svg')
+			.attr('width', width + margin.left + margin.right)
+			.attr('height', height + margin.top + margin.bottom)
+
+		svg.append('rect')
+		    .attr('width', '100%')
+		    .attr('height', '100%')
+		    .attr('fill', '#ffffff')
+
+		/**
+		 * draw
+		 * Draw a curve.
+		 */
+		function draw()
+		{
+			erase()
+			const angle = 90
+			let iterations = parseInt(document.getElementById('iterations').value)
+			let line_length = parseInt(document.getElementById('line_length').value)
+			let initiator = document.getElementById('initiator').value
+			let generator = document.getElementById('generator').value
+			let grammar = ''
+
+
+			if (iterations == 0)
+			{
+				grammar = initiator
+				console.log('grammar 0 = ', grammar)
+			}
+			else if (iterations == 1)
+			{
+				grammar = initiator.replace(/F/g, generator)
+				line_length = line_length / 4
+				console.log('grammar 1 = ', grammar)
+			}
+			else if (iterations == 2)
+			{
+				line_length = line_length / 16
+				grammar = initiator.replace(/F/g, generator)
+				grammar = grammar.replace(/F/g, generator)
+				console.log('grammar 2 = ', grammar)
+			}
+			else if (iterations == 3)
+			{
+				line_length = line_length / 64
+				grammar = initiator.replace(/F/g, generator)
+				grammar = grammar.replace(/F/g, generator)
+				grammar = grammar.replace(/F/g, generator)
+				console.log('grammar 3 = ', grammar)
+			}
+
+			let path = svg.append('path')
+				.attr('class', 'line')
+				.attr('d', line(parseGrammar(grammar, angle, iterations, line_length)))
+		}
+
+		/**
+		 * parseGrammar
+		 * @param {number} number of iterations
+		 * @param {number} turning angle
+		 * @param {number} grammar
+		  * @param {number} line length
+		 */
+		function parseGrammar(g, a, n, d)
+		{
+			const cx = width / 3
+			const cy = height - height / 3
+			let x = cx
+			let y = cy
+
+			let line_data = []
+			line_data.push({x: cx, y: cy})	// initialise line data object
+
+			let c = g.split('')		// convert grammar string to array of chars
+			let direction = 'u'		// first move is UP
+			for (let i = 0; i < c.length; i++)
+			{
+				switch (c[i]) {
+					case 'F':
+						if (direction == 'u')
+						{
+							y = y - d
+						}
+						else if (direction == 'l')
+						{
+							x = x - d
+						}
+						else if (direction == 'r')
+						{
+							x = x + d
+						}
+						else if (direction == 'd')
+						{
+							y = y + d
+						}
+						line_data.push({x: x, y: y})
+						break
+					case '+':
+						if (direction == 'u')
+						{
+							direction = 'l'
+						}
+						else if (direction == 'l')
+						{
+							direction = 'd'
+						}
+						else if (direction == 'r')
+						{
+							direction = 'u'
+						}
+						else if (direction == 'd')
+						{
+							direction = 'r'
+						}
+						break
+					case '-':
+						if (direction == 'u')
+						{
+							direction = 'r'
+						}
+						else if (direction == 'l')
+						{
+							direction = 'u'
+						}
+						else if (direction == 'r')
+						{
+							direction = 'd'
+						}
+						else if (direction == 'd')
+						{
+							direction = 'l'
+						}
+						break
+				}
+			}
+			return line_data
+		}
+
+		/**
+		 * erase
+		 * Clear all paths.
+		 */
+		function erase()
+		{
+			d3.selectAll('path').remove()
+		}
+	</script>
+  </body>
+</html>
