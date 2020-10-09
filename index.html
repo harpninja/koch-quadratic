@@ -1,38 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang='en'>
  	<head>
  		<meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
-		<title>Koch</title>
+    <link rel="stylesheet" href="../d3.css">
+    <link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css?family=Open+Sans'>
+
+		<title>Koch Quadratic</title>
 		<script src='https://d3js.org/d3.v4.min.js'></script>
-		<style>
-
-		body {
-			font-family: Verdana, sans-serif;
-			font-size: 8pt;
-			color: #555555;
-			background: #ffffff;
-			margin-left: 20px;
-			margin-top: 20px;
-		}
-
-		input {
-			font-family: Verdana, sans-serif;
-			font-size: 8pt;
-			color: #555555;
-		}
-
-		.line {
-			fill: none;
-			stroke: #000000;
-			stroke-width: 1.1px;
-		}
-
-		</style>
  	</head>
 
  	<body>
-	<h3>Quadratic Koch curves with L-systems</h3>
-	<p>From <em>The Algorithmic Beauty of Plants</em> by Przemyslaw Prusinkiewicz and Aristid Lindenmayer.</p>
+	<h1>Quadratic Koch curves with L-systems</h1>
+	<p>
+	<a href='https://github.com/harpninja/koch-quadratic'>Code on GitHub</a>
+	</p>
 	<form>
 	iterations: <select id='iterations'>
 		 			<option value='0'>0</option>
@@ -68,6 +49,8 @@
 		/**
 		 * draw
 		 * Draw a curve.
+		 * References:
+		 * The Algorithmic Beauty of Plants by Przemyslaw Prusinkiewicz and Aristid Lindenmayer
 		 */
 		function draw()
 		{
